@@ -5,6 +5,7 @@ import { buttonVariants } from "@/components/ui/button";
 import Link from "next/link";
 import Experience from "./_components/experience";
 import ProjectCard from "@/components/project/project-card";
+import Github from "./_components/Github";
 
 function HomePage() {
   return (
@@ -27,7 +28,7 @@ function HomePage() {
               className={buttonVariants({
                 variant: "outline",
                 className:
-                  "inset-shadow-sm inset-shadow-neutral-200 border-border",
+                  "inset-shadow-xs inset-shadow-neutral-200 border-border",
               })}
             >
               Resume / CV
@@ -46,7 +47,7 @@ function HomePage() {
             <p className="text-base italic text-stone-500 dark:text-neutral-300 font-semibold my-4">
               Technologies I frequently use:
             </p>
-            <div className="max-w-3xl border border-gray-400 border-dashed p-2 rounded-md bg-linear-to-br from-red-400/5 to-orange-200/5">
+            <div className="max-w-3xl border border-dashed dark:border-white/10 border-black/20 p-2 rounded-md bg-linear-to-br from-red-400/5 to-orange-200/5">
               <div className="flex items-center flex-wrap gap-2 space-y-2 mt-4 sm:mt-6">
                 <TechnologyTag tech="reactjs" /> <TechnologyTag tech="nextjs" />
                 <TechnologyTag tech="typescript" />
@@ -96,6 +97,19 @@ function HomePage() {
               Show all projects
             </Link>
           </div>
+        </Container>
+      </section>
+      <section>
+        <Container className="p-4">
+          <Github />
+        </Container>
+      </section>
+      <section>
+        <Container className="p-4">
+          <span className="text-sm font-normal text-muted-foreground">
+            Featured
+          </span>
+          <h4 className="text-2xl font-bold">Blogs</h4>
         </Container>
       </section>
     </>

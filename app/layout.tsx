@@ -23,7 +23,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${hankenGrotsek.variable}  antialiased bg-neutral-100 dark:bg-neutral-700`}
+        className={`${hankenGrotsek.variable}  antialiased bg-neutral-100 dark:bg-neutral-900`}
         suppressHydrationWarning
       >
         <ThemeProvider
