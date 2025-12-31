@@ -1,0 +1,819 @@
+export const metadata = {
+  title:
+    "Mastering JavaScript Promises: A Guide to Polyfills and Advanced Techniques",
+  description:
+    "Deep dive into JavaScript Promises, from basics to advanced patterns, and how to implement polyfills for older browsers",
+  date: "23-12-2025",
+  author: "Mehedi Hasan Shefat",
+};
+
+<div className="mb-4">
+  <a
+    href="/blog"
+    style={{
+      textDecoration: "none",
+    }}
+    className={
+      "inline-flex items-center rounded-md border border-input px-6 h-10 text-sm font-medium hover:bg-accent/5 underline-offset-4"
+    }
+  >
+    Back To Blogs
+  </a>
+</div>
+
+![JavaScript Promises Cover](/images/blogs/mhsventures.PNG)
+
+# Mastering JavaScript Promises: A Guide to Polyfills and Advanced Techniques
+
+## Introduction
+
+Promises are one of the most important concepts in modern JavaScript. They changed how we handle asynchronous operations, moving away from callback hell to a more readable and maintainable code structure. In this comprehensive guide, we'll explore Promises from the ground up, implement a polyfill, and master advanced techniques that will make you a more confident JavaScript developer.
+
+## What Are Promises?
+
+A Promise is a JavaScript object that represents the eventual completion (or failure) of an asynchronous operation and its resulting value.
+
+```javascript
+// A promise example
+const myPromise = new Promise((resolve, reject) => {
+  setTimeout(() => {
+    resolve("Success!");
+  }, 1000);
+});
+
+myPromise.then((result) => {
+  console.log(result); // Logs: Success!
+});
+```
+
+### Promise States
+
+A Promise can be in one of three states:
+
+| State         | Description                                   | Can Change To         |
+| ------------- | --------------------------------------------- | --------------------- |
+| **Pending**   | Initial state, operation hasn't started yet   | Fulfilled or Rejected |
+| **Fulfilled** | Operation completed successfully, has a value | None                  |
+| **Rejected**  | Operation failed, has a reason for failure    | None                  |
+
+Once a Promise is settled (fulfilled or rejected), it cannot change states. This is called **immutability**.
+
+```javascript
+// State diagram
+Pending → Fulfilled (with value)
+       → Rejected (with reason)
+```
+
+## Promise Basics
+
+### Creating Promises
+
+```javascript
+// Basic promise creation
+const promise = new Promise((resolve, reject) => {
+  const success = true;
+
+  if (success) {
+    resolve("Operation successful");
+  } else {
+    reject("Operation failed");
+  }
+});
+```
+
+### Promise Chains with `.then()`
+
+```javascript
+// Chaining promises
+fetchUser(userId)
+  .then((user) => fetchUserPosts(user.id))
+  .then((posts) => posts.filter((p) => p.likes > 10))
+  .then((filtered) => console.log(filtered))
+  .catch((error) => console.error("Error:", error));
+```
+
+### Error Handling with `.catch()`
+
+```javascript
+// Catching errors
+promise
+  .then((result) => {
+    console.log(result);
+    throw new Error("Oops!"); // This will be caught
+  })
+  .catch((error) => {
+    console.error("Caught error:", error.message);
+    return "recovered"; // Can recover from error
+  });
+```
+
+### `.finally()` Block
+
+```javascript
+// Finally block runs regardless of outcome
+fetchData()
+  .then((data) => processData(data))
+  .catch((error) => handleError(error))
+  .finally(() => {
+    // Always runs
+    console.log("Cleanup done");
+    hideLoadingSpinner();
+  });
+```
+
+## Advanced Promise Patterns
+
+### 1. Promise.all() - Wait for All Promises
+
+```javascript
+// Run multiple promises in parallel
+const promises = [fetchUser(1), fetchUser(2), fetchUser(3)];
+
+Promise.all(promises)
+  .then((users) => {
+    console.log("All users:", users);
+  })
+  .catch((error) => {
+    // If ANY promise rejects, this catches it
+    console.error("One of the promises failed:", error);
+  });
+
+// Real-world example
+async function loadDashboard() {
+  try {
+    const [userData, analytics, settings] = await Promise.all([
+      api.getUser(),
+      api.getAnalytics(),
+      api.getSettings(),
+    ]);
+
+    renderDashboard(userData, analytics, settings);
+  } catch (error) {
+    showError("Failed to load dashboard");
+  }
+}
+```
+
+**Key points:**
+
+- All promises must resolve for success
+- Rejects immediately if any promise rejects
+- Great for parallel operations
+
+### 2. Promise.race() - First Promise Wins
+
+```javascript
+// Returns the first promise to settle
+const firstResult = await Promise.race([
+  fetchFromServer1(),
+  fetchFromServer2(),
+  fetchFromServer3(),
+]);
+
+// Timeout pattern
+function withTimeout(promise, ms) {
+  return Promise.race([
+    promise,
+    new Promise((_, reject) =>
+      setTimeout(() => reject(new Error("Timeout")), ms)
+    ),
+  ]);
+}
+
+// Usage
+try {
+  const data = await withTimeout(slowAPI(), 5000);
+} catch (error) {
+  console.error(error.message); // 'Timeout'
+}
+```
+
+### 3. Promise.allSettled() - Get All Results
+
+Unlike `Promise.all()`, this waits for all promises to settle before returning.
+
+```javascript
+const results = await Promise.allSettled([
+  fetchUser(1),
+  fetchUser(2),
+  fetchUser(3),
+]);
+
+// Results structure
+results.forEach((result, index) => {
+  if (result.status === "fulfilled") {
+    console.log(`User ${index + 1}:`, result.value);
+  } else {
+    console.log(`User ${index + 1} failed:`, result.reason);
+  }
+});
+
+// Practical example - bulk email sending
+async function sendEmails(emails) {
+  const promises = emails.map((email) =>
+    sendEmail(email).catch((error) => ({
+      email,
+      error: error.message,
+    }))
+  );
+
+  const results = await Promise.allSettled(promises);
+
+  const failed = results
+    .filter((r) => r.status === "rejected")
+    .map((r) => r.reason);
+
+  return { total: results.length, failed };
+}
+```
+
+### 4. Promise.any() - First Success Wins
+
+```javascript
+// Returns the first fulfilled promise
+// Rejects only if all promises reject
+const winner = await Promise.any([
+  attemptLogin("google"),
+  attemptLogin("github"),
+  attemptLogin("manual"),
+]);
+
+console.log("Logged in via:", winner);
+```
+
+## Implementing a Promise Polyfill
+
+For older browsers that don't support Promises, we need a polyfill. Here's a simplified but complete implementation:
+
+```javascript
+// Promise Polyfill
+if (typeof Promise === "undefined") {
+  window.Promise = function (executor) {
+    if (typeof executor !== "function") {
+      throw new TypeError("Promise executor must be a function");
+    }
+
+    let state = "pending"; // 'pending', 'fulfilled', 'rejected'
+    let value;
+    let reason;
+    let onFulfilledCallbacks = [];
+    let onRejectedCallbacks = [];
+
+    const resolve = (val) => {
+      if (state === "pending") {
+        state = "fulfilled";
+        value = val;
+
+        // Asynchronous execution
+        setTimeout(() => {
+          onFulfilledCallbacks.forEach((callback) => callback(value));
+        }, 0);
+      }
+    };
+
+    const reject = (err) => {
+      if (state === "pending") {
+        state = "rejected";
+        reason = err;
+
+        // Asynchronous execution
+        setTimeout(() => {
+          onRejectedCallbacks.forEach((callback) => callback(reason));
+        }, 0);
+      }
+    };
+
+    // Call executor function
+    try {
+      executor(resolve, reject);
+    } catch (error) {
+      reject(error);
+    }
+
+    // The .then() method
+    this.then = function (onFulfilled, onRejected) {
+      onFulfilled =
+        typeof onFulfilled === "function" ? onFulfilled : (val) => val;
+
+      onRejected =
+        typeof onRejected === "function"
+          ? onRejected
+          : (err) => {
+              throw err;
+            };
+
+      const newPromise = new Promise((resolve, reject) => {
+        const fulfilledHandler = () => {
+          try {
+            const result = onFulfilled(value);
+            resolvePromise(newPromise, result, resolve, reject);
+          } catch (error) {
+            reject(error);
+          }
+        };
+
+        const rejectedHandler = () => {
+          try {
+            const result = onRejected(reason);
+            resolvePromise(newPromise, result, resolve, reject);
+          } catch (error) {
+            reject(error);
+          }
+        };
+
+        if (state === "fulfilled") {
+          setTimeout(fulfilledHandler, 0);
+        } else if (state === "rejected") {
+          setTimeout(rejectedHandler, 0);
+        } else {
+          onFulfilledCallbacks.push(fulfilledHandler);
+          onRejectedCallbacks.push(rejectedHandler);
+        }
+      });
+
+      return newPromise;
+    };
+
+    // The .catch() method
+    this.catch = function (onRejected) {
+      return this.then(null, onRejected);
+    };
+
+    // The .finally() method
+    this.finally = function (onFinally) {
+      return this.then(
+        (value) => Promise.resolve(onFinally()).then(() => value),
+        (reason) =>
+          Promise.resolve(onFinally()).then(() => {
+            throw reason;
+          })
+      );
+    };
+  };
+
+  // Helper function to resolve promise chain
+  function resolvePromise(promise, result, resolve, reject) {
+    if (result === promise) {
+      reject(new TypeError("Chaining cycle detected"));
+    } else if (result && typeof result.then === "function") {
+      // result is a promise-like object
+      result.then(resolve, reject);
+    } else {
+      resolve(result);
+    }
+  }
+
+  // Static methods
+  Promise.resolve = function (value) {
+    return new Promise((resolve) => resolve(value));
+  };
+
+  Promise.reject = function (reason) {
+    return new Promise((_, reject) => reject(reason));
+  };
+
+  Promise.all = function (promises) {
+    return new Promise((resolve, reject) => {
+      if (!Array.isArray(promises)) {
+        reject(new TypeError("Promise.all expects an array"));
+      }
+
+      let completed = 0;
+      const results = [];
+
+      if (promises.length === 0) {
+        resolve([]);
+        return;
+      }
+
+      promises.forEach((promise, index) => {
+        Promise.resolve(promise)
+          .then((value) => {
+            results[index] = value;
+            completed++;
+            if (completed === promises.length) {
+              resolve(results);
+            }
+          })
+          .catch(reject);
+      });
+    });
+  };
+}
+```
+
+## Common Promise Patterns
+
+### 1. Retry Pattern
+
+```javascript
+async function retryPromise(fn, retries = 3, delay = 1000) {
+  try {
+    return await fn();
+  } catch (error) {
+    if (retries === 0) throw error;
+
+    await new Promise((resolve) => setTimeout(resolve, delay));
+    return retryPromise(fn, retries - 1, delay);
+  }
+}
+
+// Usage
+const data = await retryPromise(() => fetchAPI(), 3, 500);
+```
+
+### 2. Timeout Pattern
+
+```javascript
+function timeout(promise, ms) {
+  return Promise.race([
+    promise,
+    new Promise((_, reject) =>
+      setTimeout(() => reject(new Error("Timeout")), ms)
+    ),
+  ]);
+}
+
+// Usage
+try {
+  await timeout(slowOperation(), 5000);
+} catch (error) {
+  console.error("Operation timed out");
+}
+```
+
+### 3. Sequential Promises
+
+```javascript
+async function processSequentially(items, processor) {
+  const results = [];
+
+  for (const item of items) {
+    const result = await processor(item);
+    results.push(result);
+  }
+
+  return results;
+}
+
+// Or using reduce
+function processSequentiallyWithReduce(items, processor) {
+  return items.reduce(
+    (promise, item) =>
+      promise.then((results) =>
+        processor(item).then((result) => [...results, result])
+      ),
+    Promise.resolve([])
+  );
+}
+```
+
+### 4. Parallel Promises with Concurrency Limit
+
+```javascript
+async function parallelWithLimit(items, processor, limit = 3) {
+  const results = new Array(items.length);
+  let activeCount = 0;
+  let index = 0;
+
+  return new Promise(async (resolve, reject) => {
+    const startProcessor = async () => {
+      if (index === items.length) {
+        if (activeCount === 0) resolve(results);
+        return;
+      }
+
+      activeCount++;
+      const currentIndex = index++;
+      const item = items[currentIndex];
+
+      try {
+        results[currentIndex] = await processor(item);
+      } catch (error) {
+        reject(error);
+        return;
+      }
+
+      activeCount--;
+      startProcessor();
+    };
+
+    for (let i = 0; i < Math.min(limit, items.length); i++) {
+      startProcessor();
+    }
+  });
+}
+
+// Usage
+const urls = ['url1', 'url2', 'url3', ...];
+const results = await parallelWithLimit(urls, fetch, 5);
+```
+
+## Promise Anti-Patterns to Avoid
+
+### ❌ Unhandled Promise Rejections
+
+```javascript
+// Bad - missing .catch()
+fetchData().then((data) => {
+  processData(data);
+});
+
+// Good - always handle rejections
+fetchData()
+  .then((data) => {
+    processData(data);
+  })
+  .catch((error) => {
+    console.error("Error:", error);
+  });
+```
+
+### ❌ Unnecessary Promise Wrapping
+
+```javascript
+// Bad
+function getData() {
+  return new Promise((resolve, reject) => {
+    return fetchData() // Already returns a promise!
+      .then(resolve)
+      .catch(reject);
+  });
+}
+
+// Good
+function getData() {
+  return fetchData();
+}
+```
+
+### ❌ Not Returning Promises in Chains
+
+```javascript
+// Bad
+fetchUser()
+  .then((user) => {
+    fetchPosts(user.id); // Not returned!
+  })
+  .then((posts) => {
+    console.log(posts); // posts will be undefined
+  });
+
+// Good
+fetchUser()
+  .then((user) => fetchPosts(user.id)) // Return the promise
+  .then((posts) => {
+    console.log(posts);
+  });
+```
+
+### ❌ Using .then() Instead of async/await
+
+```javascript
+// Old style - hard to read
+function loadData() {
+  return fetchUser()
+    .then((user) => fetchPosts(user.id))
+    .then((posts) => posts.filter((p) => p.likes > 10))
+    .catch((error) => console.error(error));
+}
+
+// Modern style - much cleaner
+async function loadData() {
+  try {
+    const user = await fetchUser();
+    const posts = await fetchPosts(user.id);
+    return posts.filter((p) => p.likes > 10);
+  } catch (error) {
+    console.error(error);
+  }
+}
+```
+
+## Async/Await - The Modern Promise Syntax
+
+`async/await` is syntactic sugar over Promises, making asynchronous code look synchronous.
+
+```javascript
+// Basic async function
+async function fetchUser(id) {
+  const response = await fetch(`/api/users/${id}`);
+  const user = await response.json();
+  return user;
+}
+
+// Error handling
+async function loadUserData(id) {
+  try {
+    const user = await fetchUser(id);
+    const posts = await fetchPosts(user.id);
+    return { user, posts };
+  } catch (error) {
+    console.error("Failed to load user data:", error);
+    throw error;
+  }
+}
+
+// Parallel execution
+async function loadMultiple() {
+  // Sequential - slower
+  const user = await fetchUser(1);
+  const posts = await fetchPosts(user.id);
+
+  // Parallel - faster
+  const [userData, postsData] = await Promise.all([
+    fetchUser(1),
+    fetchPosts(1),
+  ]);
+}
+```
+
+## Real-World Examples
+
+### API Request with Retry and Timeout
+
+```javascript
+async function fetchWithRetry(url, options = {}) {
+  const { retries = 3, timeout = 5000 } = options;
+
+  async function attempt(retriesLeft) {
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), timeout);
+
+      const response = await fetch(url, {
+        ...options,
+        signal: controller.signal,
+      });
+
+      clearTimeout(timeoutId);
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+
+      return response.json();
+    } catch (error) {
+      if (retriesLeft > 0 && error.name !== "AbortError") {
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+        return attempt(retriesLeft - 1);
+      }
+      throw error;
+    }
+  }
+
+  return attempt(retries);
+}
+
+// Usage
+const data = await fetchWithRetry("/api/data", {
+  retries: 3,
+  timeout: 5000,
+  headers: { Authorization: "Bearer token" },
+});
+```
+
+### Rate-Limited API Calls
+
+```javascript
+class RateLimitedQueue {
+  constructor(limit = 5, interval = 1000) {
+    this.limit = limit;
+    this.interval = interval;
+    this.queue = [];
+    this.running = 0;
+    this.lastResetTime = Date.now();
+  }
+
+  async add(fn) {
+    return new Promise((resolve, reject) => {
+      this.queue.push({ fn, resolve, reject });
+      this.process();
+    });
+  }
+
+  async process() {
+    if (this.running >= this.limit) return;
+
+    const now = Date.now();
+    if (now - this.lastResetTime >= this.interval) {
+      this.running = 0;
+      this.lastResetTime = now;
+    }
+
+    if (this.queue.length === 0) return;
+
+    this.running++;
+    const { fn, resolve, reject } = this.queue.shift();
+
+    try {
+      const result = await fn();
+      resolve(result);
+    } catch (error) {
+      reject(error);
+    }
+
+    this.process();
+  }
+}
+
+// Usage
+const queue = new RateLimitedQueue(10, 1000); // 10 requests per second
+
+const results = await Promise.all([
+  queue.add(() => fetchAPI("/endpoint1")),
+  queue.add(() => fetchAPI("/endpoint2")),
+  // ... more requests
+]);
+```
+
+## Testing Promises
+
+```javascript
+// Jest example
+describe("fetchUser", () => {
+  test("resolves with user data", async () => {
+    const user = await fetchUser(1);
+    expect(user.id).toBe(1);
+    expect(user.name).toBeDefined();
+  });
+
+  test("rejects with error message", async () => {
+    await expect(fetchUser(-1)).rejects.toThrow("Invalid user ID");
+  });
+
+  test("handles timeout", async () => {
+    await expect(timeout(slowAPI(), 1000)).rejects.toThrow("Timeout");
+  });
+});
+```
+
+## Browser Compatibility
+
+| Feature            | Chrome | Firefox | Safari | IE  |
+| ------------------ | ------ | ------- | ------ | --- |
+| Promise            | 32+    | 29+     | 8+     | 11+ |
+| async/await        | 55+    | 52+     | 11+    | ❌  |
+| Promise.all        | 32+    | 29+     | 8+     | 11+ |
+| Promise.race       | 32+    | 29+     | 8+     | 11+ |
+| Promise.allSettled | 76+    | 71+     | 13+    | ❌  |
+| Promise.any        | 85+    | 79+     | 14+    | ❌  |
+
+For older browsers, use the polyfill provided earlier in this guide.
+
+## Debugging Promises
+
+### Enable Promise Rejection Warnings
+
+```javascript
+process.on("unhandledRejection", (reason, promise) => {
+  console.error("Unhandled Rejection:", reason);
+});
+
+// Browser equivalent
+window.addEventListener("unhandledrejection", (event) => {
+  console.error("Unhandled rejection:", event.reason);
+});
+```
+
+### Use Developer Tools
+
+Most modern browsers have Promise-specific debugging in DevTools:
+
+- Set breakpoints in async functions
+- Step through Promise chains
+- Inspect pending promises
+
+## Conclusion
+
+Mastering Promises is essential for modern JavaScript development. Whether you're dealing with network requests, file operations, or any asynchronous task, Promises provide a robust and maintainable way to handle async code.
+
+Key takeaways:
+
+1. **Understand the three states**: pending, fulfilled, rejected
+2. **Use `.then()`, `.catch()`, and `.finally()` correctly**
+3. **Master Promise composition**: `Promise.all()`, `Promise.race()`, `Promise.allSettled()`
+4. **Prefer async/await** for cleaner code
+5. **Always handle rejections** to prevent unhandled promise rejections
+6. **Implement polyfills** for older browser support
+7. **Use patterns** like retry, timeout, and rate limiting for robustness
+
+Keep practicing and experimenting with Promises. They're powerful tools that will make your JavaScript code more reliable and maintainable!
+
+---
+
+_Last updated: December 23, 2024_
+
+<div className="mt-4">
+  <a
+    href="/blog"
+    style={{
+      textDecoration: "none",
+    }}
+    className={
+      "inline-flex items-center rounded-md border border-input px-6 h-10 text-sm font-medium hover:bg-accent/5 underline-offset-4"
+    }
+  >
+    Back To Blogs
+  </a>
+</div>

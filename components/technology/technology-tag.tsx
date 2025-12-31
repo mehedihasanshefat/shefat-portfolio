@@ -17,7 +17,7 @@ export function TechnologyTag({
 
   if (!technology) {
     return (
-      <span className="inline-flex items-center rounded-full bg-gray-100 dark:bg-gray-800 px-2 py-1 text-xs sm:text-sm">
+      <span className="inline-flex flex-nowrap items-center rounded-full bg-gray-100 dark:bg-gray-800 px-2 py-1 text-xs sm:text-sm">
         {tech}
       </span>
     );

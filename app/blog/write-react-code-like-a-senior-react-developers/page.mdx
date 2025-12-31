@@ -1,0 +1,825 @@
+export const metadata = {
+  title: "Write React Code Like a Senior Developer",
+  description:
+    "Master advanced React patterns, best practices, and professional techniques used by senior developers",
+  date: "2024-12-23",
+  author: "Mehedi Hasan Shefat",
+};
+
+<div className="mb-4">
+  <a
+    href="/blog"
+    style={{
+      textDecoration: "none",
+    }}
+    className={
+      "inline-flex items-center rounded-md border border-input px-6 h-10 text-sm font-medium hover:bg-accent/5 underline-offset-4"
+    }
+  >
+    Back To Blogs
+  </a>
+</div>
+
+![Write React Code Like a Senior Developer](/images/blogs/senior-developer.PNG)
+
+# Write React Code Like a Senior Developer
+
+## Introduction
+
+The difference between junior and senior React developers isn't just experience—it's understanding the fundamental principles that lead to maintainable, scalable, and performant code. In this comprehensive guide, we'll explore the patterns, techniques, and mindset shifts that will elevate your React development to a professional level.
+
+## 1. Component Design Principles
+
+### Single Responsibility Principle (SRP)
+
+A component should do one thing and do it well.
+
+```javascript
+// ❌ Bad: Component does too much
+function UserProfile() {
+  const [user, setUser] = useState(null);
+  const [posts, setPosts] = useState([]);
+  const [comments, setComments] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    // Fetch user, posts, and comments all in one place
+    Promise.all([fetchUser(), fetchPosts(), fetchComments()]).then(
+      ([u, p, c]) => {
+        setUser(u);
+        setPosts(p);
+        setComments(c);
+        setLoading(false);
+      }
+    );
+  }, []);
+
+  return (
+    <div>
+      <Header user={user} />
+      <PostList posts={posts} />
+      <CommentSection comments={comments} />
+    </div>
+  );
+}
+
+// ✅ Good: Separate concerns into smaller components
+function UserProfile({ userId }) {
+  return (
+    <div>
+      <UserHeader userId={userId} />
+      <UserPostsSection userId={userId} />
+      <UserCommentsSection userId={userId} />
+    </div>
+  );
+}
+
+function UserHeader({ userId }) {
+  const user = useUser(userId);
+  return <Header user={user} />;
+}
+
+function UserPostsSection({ userId }) {
+  const posts = useUserPosts(userId);
+  return <PostList posts={posts} />;
+}
+
+function UserCommentsSection({ userId }) {
+  const comments = useUserComments(userId);
+  return <CommentSection comments={comments} />;
+}
+```
+
+### Composition Over Inheritance
+
+React favors composition. Build complex UIs by combining simple, focused components.
+
+```javascript
+// ❌ Bad: Inheritance hierarchy
+class Button extends React.Component {
+  render() {
+    return (
+      <button className={`btn btn-${this.props.type}`}>
+        {this.props.children}
+      </button>
+    );
+  }
+}
+
+class PrimaryButton extends Button {
+  render() {
+    this.props.type = "primary";
+    return super.render();
+  }
+}
+
+// ✅ Good: Composition with props
+function Button({ variant = "default", size = "md", ...props }) {
+  const classes = `btn btn-${variant} btn-${size}`;
+  return <button className={classes} {...props} />;
+}
+
+function PrimaryButton(props) {
+  return <Button variant="primary" {...props} />;
+}
+
+// Even better: Higher-order component or render props
+const withButtonStyling = (Component) => (props) =>
+  <Component className="btn" {...props} />;
+
+const StyledButton = withButtonStyling(Button);
+```
+
+## 2. State Management Best Practices
+
+### Lifting State Only When Necessary
+
+```javascript
+// ❌ Bad: State lifted too high
+function ParentComponent() {
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filterType, setFilterType] = useState("all");
+  const [sortBy, setSortBy] = useState("date");
+
+  return (
+    <>
+      <SearchBar query={searchQuery} onChange={setSearchQuery} />
+      <FilterPanel type={filterType} onChange={setFilterType} />
+      <SortPanel sortBy={sortBy} onChange={setSortBy} />
+      <Results query={searchQuery} type={filterType} sortBy={sortBy} />
+    </>
+  );
+}
+
+// ✅ Good: Keep state local to where it's used
+function SearchComponent() {
+  const [query, setQuery] = useState("");
+  return <SearchBar query={query} onChange={setQuery} />;
+}
+
+function FilterComponent() {
+  const [type, setType] = useState("all");
+  return <FilterPanel type={type} onChange={setType} />;
+}
+
+function ParentComponent() {
+  return (
+    <>
+      <SearchComponent />
+      <FilterComponent />
+      <SortComponent />
+      <Results />
+    </>
+  );
+}
+```
+
+### Using Context API Effectively
+
+```javascript
+// Create a focused context for specific concerns
+const ThemeContext = React.createContext();
+const UserContext = React.createContext();
+const NotificationContext = React.createContext();
+
+// ❌ Bad: One mega context with everything
+const AppContext = React.createContext();
+
+// ✅ Good: Separate contexts by concern
+function ThemeProvider({ children }) {
+  const [theme, setTheme] = useState("light");
+
+  return (
+    <ThemeContext.Provider value={{ theme, setTheme }}>
+      {children}
+    </ThemeContext.Provider>
+  );
+}
+
+function useTheme() {
+  const context = React.useContext(ThemeContext);
+  if (!context) {
+    throw new Error("useTheme must be used within ThemeProvider");
+  }
+  return context;
+}
+
+// Usage
+function App() {
+  return (
+    <ThemeProvider>
+      <UserProvider>
+        <NotificationProvider>
+          <MainApp />
+        </NotificationProvider>
+      </UserProvider>
+    </ThemeProvider>
+  );
+}
+```
+
+## 3. Advanced Hook Patterns
+
+### Custom Hooks for Logic Reuse
+
+```javascript
+// ✅ Extract complex logic into custom hooks
+function useAsync(asyncFunction, immediate = true) {
+  const [status, setStatus] = useState("idle");
+  const [data, setData] = useState(null);
+  const [error, setError] = useState(null);
+
+  const execute = useCallback(async () => {
+    setStatus("pending");
+    setData(null);
+    setError(null);
+
+    try {
+      const response = await asyncFunction();
+      setData(response);
+      setStatus("success");
+      return response;
+    } catch (err) {
+      setError(err);
+      setStatus("error");
+      throw err;
+    }
+  }, [asyncFunction]);
+
+  useEffect(() => {
+    if (immediate) {
+      execute();
+    }
+  }, [execute, immediate]);
+
+  return { execute, status, data, error };
+}
+
+// Usage
+function UserProfile({ userId }) {
+  const { data: user, status, error } = useAsync(() => fetchUser(userId), true);
+
+  if (status === "pending") return <Spinner />;
+  if (status === "error") return <ErrorBoundary error={error} />;
+  return <div>{user?.name}</div>;
+}
+```
+
+### useReducer for Complex State
+
+```javascript
+// ✅ Use useReducer for complex state logic
+const initialState = {
+  filters: { category: "all", price: 0 },
+  search: "",
+  results: [],
+  loading: false,
+  error: null,
+};
+
+function filterReducer(state, action) {
+  switch (action.type) {
+    case "SET_FILTERS":
+      return { ...state, filters: action.payload };
+    case "SET_SEARCH":
+      return { ...state, search: action.payload };
+    case "FETCH_START":
+      return { ...state, loading: true, error: null };
+    case "FETCH_SUCCESS":
+      return { ...state, results: action.payload, loading: false };
+    case "FETCH_ERROR":
+      return { ...state, error: action.payload, loading: false };
+    case "RESET":
+      return initialState;
+    default:
+      return state;
+  }
+}
+
+function SearchFilters() {
+  const [state, dispatch] = useReducer(filterReducer, initialState);
+
+  const handleFilterChange = (filters) => {
+    dispatch({ type: "SET_FILTERS", payload: filters });
+  };
+
+  return (
+    <div>
+      <FilterPanel onChange={handleFilterChange} />
+      <Results results={state.results} loading={state.loading} />
+    </div>
+  );
+}
+```
+
+## 4. Performance Optimization
+
+### Memoization Strategy
+
+```javascript
+// ✅ Use memo for expensive components
+const UserCard = React.memo(
+  ({ user, onSelect }) => {
+    // This only re-renders if 'user' or 'onSelect' changes
+    return (
+      <div onClick={() => onSelect(user)}>
+        <h3>{user.name}</h3>
+        <p>{user.email}</p>
+      </div>
+    );
+  },
+  (prevProps, nextProps) => {
+    // Custom comparison function (return true if props are equal)
+    return (
+      prevProps.user.id === nextProps.user.id &&
+      prevProps.onSelect === nextProps.onSelect
+    );
+  }
+);
+
+// Usage with useCallback to maintain function identity
+function UserList({ users }) {
+  const [selected, setSelected] = useState(null);
+
+  const handleSelect = useCallback((user) => {
+    setSelected(user);
+  }, []);
+
+  return (
+    <div>
+      {users.map((user) => (
+        <UserCard key={user.id} user={user} onSelect={handleSelect} />
+      ))}
+    </div>
+  );
+}
+```
+
+### Code Splitting and Lazy Loading
+
+```javascript
+// ✅ Lazy load components that aren't immediately needed
+const AdminPanel = React.lazy(() => import("./AdminPanel"));
+const AnalyticsDashboard = React.lazy(() => import("./AnalyticsDashboard"));
+
+function App() {
+  const [userRole, setUserRole] = useState("user");
+
+  return (
+    <Suspense fallback={<Spinner />}>
+      {userRole === "admin" && <AdminPanel />}
+      {userRole === "analyst" && <AnalyticsDashboard />}
+    </Suspense>
+  );
+}
+```
+
+### useCallback and useMemo
+
+```javascript
+// ✅ Cache expensive computations
+function Dashboard({ users }) {
+  // This function maintains the same reference across renders
+  const handleUserClick = useCallback((userId) => {
+    console.log("User clicked:", userId);
+  }, []); // Dependencies array
+
+  // Expensive computation is memoized
+  const sortedUsers = useMemo(() => {
+    console.log("Sorting users...");
+    return users.sort((a, b) => a.name.localeCompare(b.name));
+  }, [users]);
+
+  return <UserList users={sortedUsers} onUserClick={handleUserClick} />;
+}
+```
+
+## 5. Error Handling and Resilience
+
+### Error Boundaries
+
+```javascript
+// ✅ Create error boundary for graceful error handling
+class ErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false, error: null };
+  }
+
+  static getDerivedStateFromError(error) {
+    return { hasError: true, error };
+  }
+
+  componentDidCatch(error, errorInfo) {
+    console.error("Error caught:", error, errorInfo);
+    // Log to error reporting service
+    logErrorToService(error, errorInfo);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="error-container">
+          <h2>Something went wrong</h2>
+          <button onClick={() => this.setState({ hasError: false })}>
+            Try again
+          </button>
+        </div>
+      );
+    }
+
+    return this.props.children;
+  }
+}
+
+// Usage
+function App() {
+  return (
+    <ErrorBoundary>
+      <MainContent />
+    </ErrorBoundary>
+  );
+}
+```
+
+### Async Error Handling
+
+```javascript
+// ✅ Handle async errors properly
+function useAsyncError() {
+  const [, setError] = useState();
+  return useCallback(
+    (error) => {
+      setError(() => {
+        throw error;
+      });
+    },
+    [setError]
+  );
+}
+
+function AsyncComponent() {
+  const throwAsyncError = useAsyncError();
+
+  useEffect(() => {
+    fetchData().catch((error) => {
+      throwAsyncError(error);
+    });
+  }, [throwAsyncError]);
+
+  return <div>Content</div>;
+}
+```
+
+## 6. Testing Strategies
+
+### Unit Testing Components
+
+```javascript
+// ✅ Test component behavior and props
+import { render, screen, fireEvent } from "@testing-library/react";
+
+describe("Button", () => {
+  test("renders with correct text", () => {
+    render(<Button>Click me</Button>);
+    expect(screen.getByText("Click me")).toBeInTheDocument();
+  });
+
+  test("calls onClick handler when clicked", () => {
+    const handleClick = jest.fn();
+    render(<Button onClick={handleClick}>Click me</Button>);
+
+    fireEvent.click(screen.getByText("Click me"));
+    expect(handleClick).toHaveBeenCalledTimes(1);
+  });
+
+  test("is disabled when disabled prop is true", () => {
+    render(<Button disabled>Click me</Button>);
+    expect(screen.getByText("Click me")).toBeDisabled();
+  });
+});
+```
+
+### Integration Testing
+
+```javascript
+// ✅ Test component interactions
+describe("UserList", () => {
+  test("displays users and handles selection", async () => {
+    const mockOnSelect = jest.fn();
+
+    render(
+      <UserList users={[{ id: 1, name: "John" }]} onSelect={mockOnSelect} />
+    );
+
+    fireEvent.click(screen.getByText("John"));
+
+    expect(mockOnSelect).toHaveBeenCalledWith(
+      expect.objectContaining({ id: 1, name: "John" })
+    );
+  });
+});
+```
+
+## 7. Type Safety with TypeScript
+
+### Proper TypeScript Patterns
+
+```typescript
+// ✅ Strong typing for props and state
+interface User {
+  id: number;
+  name: string;
+  email: string;
+  role: "user" | "admin" | "moderator";
+}
+
+interface UserCardProps {
+  user: User;
+  onSelect: (user: User) => void;
+  isSelected?: boolean;
+}
+
+const UserCard: React.FC<UserCardProps> = ({
+  user,
+  onSelect,
+  isSelected = false,
+}) => {
+  return (
+    <div className={isSelected ? "selected" : ""}>
+      <h3>{user.name}</h3>
+      <button onClick={() => onSelect(user)}>Select</button>
+    </div>
+  );
+};
+
+// ✅ Generic hooks with TypeScript
+function useAsync<T>(
+  asyncFunction: () => Promise<T>,
+  immediate: boolean = true
+) {
+  const [status, setStatus] = useState<
+    "idle" | "pending" | "success" | "error"
+  >("idle");
+  const [data, setData] = useState<T | null>(null);
+  const [error, setError] = useState<Error | null>(null);
+
+  // ... implementation
+}
+```
+
+## 8. Common Anti-Patterns to Avoid
+
+### ❌ Directly Mutating State
+
+```javascript
+// Bad
+function addItem(item) {
+  state.items.push(item); // DON'T DO THIS
+  setState(state);
+}
+
+// Good
+function addItem(item) {
+  setState((prevState) => ({
+    items: [...prevState.items, item],
+  }));
+}
+```
+
+### ❌ Missing Dependencies in useEffect
+
+```javascript
+// ❌ Bad: Will cause stale closures
+useEffect(() => {
+  const interval = setInterval(() => {
+    console.log(count); // Always logs initial count
+  }, 1000);
+
+  return () => clearInterval(interval);
+}, []); // Missing 'count' dependency
+
+// ✅ Good: Proper dependency array
+useEffect(() => {
+  const interval = setInterval(() => {
+    console.log(count); // Logs current count
+  }, 1000);
+
+  return () => clearInterval(interval);
+}, [count]); // Includes count dependency
+```
+
+### ❌ Inline Objects as Dependencies
+
+```javascript
+// ❌ Bad: New object created on every render
+function Component() {
+  const config = { timeout: 5000 }; // Created every render!
+
+  useEffect(() => {
+    setupService(config);
+  }, [config]); // Will re-run on every render
+}
+
+// ✅ Good: Move outside or memoize
+function Component() {
+  const config = useMemo(() => ({ timeout: 5000 }), []);
+
+  useEffect(() => {
+    setupService(config);
+  }, [config]); // Only created once
+}
+```
+
+## 9. Code Organization
+
+### Folder Structure
+
+```
+src/
+├── components/
+│   ├── common/
+│   │   ├── Button/
+│   │   │   ├── Button.tsx
+│   │   │   ├── Button.test.tsx
+│   │   │   └── Button.stories.tsx
+│   │   └── Card/
+│   ├── features/
+│   │   ├── UserProfile/
+│   │   │   ├── UserProfile.tsx
+│   │   │   ├── useUserProfile.ts
+│   │   │   └── UserProfile.test.tsx
+│   │   └── Dashboard/
+│   └── layout/
+├── hooks/
+│   ├── useAsync.ts
+│   ├── useFetch.ts
+│   └── useLocalStorage.ts
+├── context/
+│   ├── ThemeContext.ts
+│   └── UserContext.ts
+├── services/
+│   ├── api.ts
+│   └── auth.ts
+├── types/
+│   └── index.ts
+├── utils/
+│   ├── formatters.ts
+│   └── validators.ts
+└── App.tsx
+```
+
+## 10. Performance Monitoring
+
+### Identify Performance Issues
+
+```javascript
+// ✅ Use React Profiler in development
+import { Profiler } from "react";
+
+function onRenderCallback(id, phase, actualDuration) {
+  console.log(`${id} (${phase}) took ${actualDuration}ms`);
+}
+
+function App() {
+  return (
+    <Profiler id="App" onRender={onRenderCallback}>
+      <MainContent />
+    </Profiler>
+  );
+}
+
+// ✅ Monitor Web Vitals
+import { getCLS, getFID, getFCP, getLCP, getTTFB } from "web-vitals";
+
+getCLS(console.log);
+getFID(console.log);
+getFCP(console.log);
+getLCP(console.log);
+getTTFB(console.log);
+```
+
+## 11. Clean Code Principles
+
+### Clear Naming Conventions
+
+```javascript
+// ❌ Bad: Unclear names
+const x = users.filter((u) => u.a > 18 && u.b === "active");
+const fn = (d) => d.map((i) => i.p);
+
+// ✅ Good: Descriptive names
+const activeAdultUsers = users.filter(
+  (user) => user.age > 18 && user.status === "active"
+);
+const extractUserPhotoUrls = (data) => data.map((item) => item.photoUrl);
+```
+
+### Single Responsibility Functions
+
+```javascript
+// ❌ Bad: Function does too much
+function processUserData(userId) {
+  const user = fetchUser(userId);
+  user.fullName = `${user.firstName} ${user.lastName}`;
+  user.isAdult = user.age > 18;
+  saveUser(user);
+  sendNotification(user.email);
+  return user;
+}
+
+// ✅ Good: Small, focused functions
+const getUserFullName = (user) => `${user.firstName} ${user.lastName}`;
+
+const isAdultUser = (user) => user.age > 18;
+
+async function processUser(userId) {
+  const user = await fetchUser(userId);
+  const enrichedUser = {
+    ...user,
+    fullName: getUserFullName(user),
+    isAdult: isAdultUser(user),
+  };
+
+  await saveUser(enrichedUser);
+  await sendNotification(enrichedUser.email);
+
+  return enrichedUser;
+}
+```
+
+## 12. Advanced Patterns
+
+### Render Props Pattern
+
+```javascript
+// ✅ Flexible component composition
+function DataFetcher({ url, children }) {
+  const { data, loading, error } = useAsync(() => fetch(url));
+
+  return children({ data, loading, error });
+}
+
+// Usage
+<DataFetcher url="/api/users">
+  {({ data, loading, error }) =>
+    loading ? (
+      <Spinner />
+    ) : error ? (
+      <Error error={error} />
+    ) : (
+      <UserList users={data} />
+    )
+  }
+</DataFetcher>;
+```
+
+### Higher-Order Components
+
+```javascript
+// ✅ HOC for cross-cutting concerns
+function withAuth(Component) {
+  return function AuthenticatedComponent(props) {
+    const { user, isLoading } = useAuth();
+
+    if (isLoading) return <Spinner />;
+    if (!user) return <LoginPage />;
+
+    return <Component {...props} user={user} />;
+  };
+}
+
+const ProtectedDashboard = withAuth(Dashboard);
+```
+
+## Conclusion
+
+Writing React code like a senior developer means:
+
+1. **Thinking in components**: Design components with single responsibilities
+2. **Understanding trade-offs**: Know when to use different patterns and tools
+3. **Writing testable code**: Build components that are easy to test
+4. **Optimizing for performance**: Profile and optimize based on real data
+5. **Maintaining clarity**: Write code that others can understand
+6. **Embracing best practices**: Learn and apply community standards
+7. **Continuous learning**: Stay updated with React ecosystem evolution
+
+The journey to senior-level React development is continuous. Focus on understanding the "why" behind patterns and making deliberate architectural decisions based on your specific needs.
+
+---
+
+_Last updated: December 23, 2024_
+
+<div className="mt-4">
+  <a
+    href="/blog"
+    style={{
+      textDecoration: "none",
+    }}
+    className={
+      "inline-flex items-center rounded-md border border-input px-6 h-10 text-sm font-medium hover:bg-accent/5 underline-offset-4"
+    }
+  >
+    Back To Blogs
+  </a>
+</div>

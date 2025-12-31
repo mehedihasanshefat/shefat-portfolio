@@ -1,12 +1,11 @@
 import Image from "next/image";
 import { Card, CardHeader, CardContent } from "../ui/card";
 import { Github, GlobeIcon, ArrowRight } from "lucide-react";
-import projects from "@/lib/projects";
+import { ProjectType } from "@/lib/projects";
 import { TechnologyTag } from "../technology/technology-tag";
 import Link from "next/link";
 
-function ProjectCard() {
-  const project = projects[0];
+function ProjectCard({ project }: { project: ProjectType }) {
   return (
     <Card className="p-0 rounded-none border border-indigo-900/20 rounded-b-md">
       <CardHeader className="p-0">
@@ -15,7 +14,7 @@ function ProjectCard() {
           width={600}
           height={500}
           alt={project.name}
-          className="object-cover"
+          className="object-cover not-prose"
         />
       </CardHeader>
       <CardContent className="px-3 pb-6">
@@ -34,9 +33,16 @@ function ProjectCard() {
         <div>
           <span className="text-sm font-medium">Technologies</span>
           <div className="flex items-center gap-1 my-2">
-            {project.technologies.map((item, idx) => (
-              <TechnologyTag key={idx} tech={item} showName={false} size="sm" />
-            ))}
+            {project.technologies.map((item, idx) =>
+              idx < 5 ? (
+                <TechnologyTag
+                  key={idx}
+                  tech={item}
+                  showName={false}
+                  size="sm"
+                />
+              ) : null
+            )}
           </div>
         </div>
         <div className="flex items-center justify-between pt-2">
@@ -52,7 +58,7 @@ function ProjectCard() {
             </span>
           )}
           <Link
-            href={`/projects/${project.name}`}
+            href={`/projects/${project.slug}`}
             className="text-xs flex items-center gap-1"
           >
             View Details

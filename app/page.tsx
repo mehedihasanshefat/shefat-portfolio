@@ -6,6 +6,10 @@ import Link from "next/link";
 import Experience from "./_components/experience";
 import ProjectCard from "@/components/project/project-card";
 import Github from "./_components/Github";
+import BlogCard from "@/components/blog/blog-card";
+import blogs from "@/lib/blogs";
+import projects from "@/lib/projects";
+import Image from "next/image";
 
 function HomePage() {
   return (
@@ -75,15 +79,15 @@ function HomePage() {
         </Container>
       </section>
       <section>
-        <Container className=" p-4">
+        <Container className="p-4">
           <span className="text-sm font-normal text-muted-foreground">
             Featured
           </span>
           <h4 className="text-2xl font-bold">Projects</h4>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 sm:gap-6 mt-8">
-            <ProjectCard />
-            <ProjectCard />
-            <ProjectCard />
+            {projects.slice(0, 3).map((project, idx) => (
+              <ProjectCard key={idx} project={project} />
+            ))}
           </div>
           <div className="flex justify-center items-center my-6 sm:my-8">
             <Link
@@ -105,11 +109,52 @@ function HomePage() {
         </Container>
       </section>
       <section>
-        <Container className="p-4">
+        <Container className="pt-10 px-4 pb-6">
           <span className="text-sm font-normal text-muted-foreground">
             Featured
           </span>
           <h4 className="text-2xl font-bold">Blogs</h4>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 sm:gap-6 mt-8">
+            {blogs.slice(0, 3).map((blog, idx) => (
+              <BlogCard key={idx} blog={blog} />
+            ))}
+          </div>
+          <div className="flex justify-center items-center my-6 sm:my-8">
+            <Link
+              href="/blog"
+              className={buttonVariants({
+                variant: "outline",
+                className:
+                  "inset-shadow-xs inset-shadow-neutral-200 border-border",
+              })}
+            >
+              Show all blogs
+            </Link>
+          </div>
+        </Container>
+      </section>
+      <section>
+        <Container className="px-4">
+          <div className="flex flex-col justify-center items-center gap-2 space-y-4 border border-primary/20 py-10 rounded-md">
+            <h4 className="text-lg sm:text-xl font-semibold text-muted-foreground">
+              Let's connect and build something together
+            </h4>
+            <Link
+              href="/contact"
+              className={buttonVariants({
+                className: "flex items-center gap-2 bg-primary",
+              })}
+            >
+              <Image
+                src="/images/shefat.png"
+                alt="shefat"
+                width={20}
+                height={20}
+                className="rounded-full"
+              />
+              Contact Me
+            </Link>
+          </div>
         </Container>
       </section>
     </>

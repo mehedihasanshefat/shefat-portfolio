@@ -3,6 +3,7 @@ import { Inter, Hanken_Grotesk } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import Navbar from "@/components/navbar/navbar";
+import Footer from "@/components/footer";
 
 const hankenGrotsek = Hanken_Grotesk({
   variable: "--font-hanken-grotsek",
@@ -23,7 +24,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${hankenGrotsek.variable}  antialiased bg-neutral-100 dark:bg-neutral-900`}
+        className={`${hankenGrotsek.variable}  antialiased bg-neutral-100 dark:bg-black/60`}
         suppressHydrationWarning
       >
         <ThemeProvider
@@ -34,6 +35,7 @@ export default function RootLayout({
         >
           <Navbar />
           {children}
+          <Footer />
         </ThemeProvider>
       </body>
     </html>

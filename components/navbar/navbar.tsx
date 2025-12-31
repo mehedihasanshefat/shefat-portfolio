@@ -38,13 +38,15 @@ function Navbar() {
           scrolled && "rounded-full"
         }`}
       >
-        <Image
-          src="/images/shefat.png"
-          height={50}
-          width={50}
-          alt="shefat"
-          className="rounded-full aspect-square object-cover object-top sm:w-10 sm:h-10 w-8 h-8"
-        />
+        <Link href="/">
+          <Image
+            src="/images/shefat.png"
+            height={50}
+            width={50}
+            alt="shefat"
+            className="rounded-full aspect-square object-cover object-top sm:w-10 sm:h-10 w-8 h-8"
+          />
+        </Link>
 
         <div className="flex items-center">
           {navItems.map((item, idx) => (
