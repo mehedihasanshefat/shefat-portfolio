@@ -2,9 +2,7 @@ import Container from "@/components/container";
 import { TechnologyTag } from "@/components/technology/technology-tag";
 import { Button, buttonVariants } from "@/components/ui/button";
 import projects from "@/lib/projects";
-import { technologies } from "@/lib/technologies";
 import { GithubIcon, Globe } from "lucide-react";
-import { span } from "motion/react-client";
 import Image from "next/image";
 import Link from "next/link";
 type Params = Promise<{

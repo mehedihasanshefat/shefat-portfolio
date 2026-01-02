@@ -7,7 +7,7 @@ function Experience() {
         <div className="">
           <h4 className="text-lg font-semibold mt-2">TradeByte</h4>
           <span className="text-muted-foreground text-sm font-medium">
-            Software Engineer Apprentice
+            Software Engineering Apprentice
           </span>
         </div>
         <div className="flex flex-col md:mr-8">

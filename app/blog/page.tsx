@@ -5,8 +5,8 @@ function BlogsPage() {
   return (
     <div className="w-full">
       <Container>
-        <div>
-          <h2 className="mt-0">All Blogs</h2>
+        <div className="prose dark:prose-invert my-4">
+          <h2 className="sm:mt-12 mt-0">All Blogs</h2>
           <p>
             Thoughts, tutorials, and insights on engineering, and programming.
           </p>

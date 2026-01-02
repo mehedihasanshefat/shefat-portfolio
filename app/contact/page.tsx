@@ -1,16 +1,6 @@
 // app/contact/page.tsx
 import Container from "@/components/container";
 import ContactForm from "@/components/contact-form";
-import {
-  Mail,
-  Phone,
-  MapPin,
-  Clock,
-  Github,
-  Linkedin,
-  Twitter,
-} from "lucide-react";
-import Link from "next/link";
 
 export default function ContactPage() {
   return (

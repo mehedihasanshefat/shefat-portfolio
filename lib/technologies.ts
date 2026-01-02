@@ -30,6 +30,16 @@ export const technologies: Record<string, TechnologyType> = {
     icon: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/framermotion/framermotion-original.svg",
     color: "bg-purple-100 dark:bg-purple-900/30",
   },
+  reactquery: {
+    name: "React Query",
+    icon: "/icons/react-query.png",
+    color: "bg-blue-100 dark:bg-blue-900/30",
+  },
+  shadcn: {
+    name: "ShadcnUI",
+    icon: "/icons/shadcn.png",
+    color: "bg-gray-100 dark:bg-gray-900/30",
+  },
   nodejs: {
     name: "Node.js",
     icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nodejs/nodejs-original.svg",

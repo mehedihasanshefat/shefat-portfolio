@@ -10,12 +10,13 @@ import BlogCard from "@/components/blog/blog-card";
 import blogs from "@/lib/blogs";
 import projects from "@/lib/projects";
 import Image from "next/image";
-
+import { RoleAnimator } from "@/components/role-animator";
 function HomePage() {
   return (
     <>
       <section id="hero" className="">
         <Container className="sm:min-h-screen p-4 pt-20 sm:pt-24 md:pb-10">
+          <RoleAnimator />
           {/* Name */}
           <h1 className="text-2xl font-bold md:text-4xl mt-4 sm:mt-6 text-neutral-700 dark:text-neutral-200">
             Mehedi Hasan Shefat
@@ -28,7 +29,9 @@ function HomePage() {
           {/* Contact Buttons*/}
           <div className="mt-4 sm:mt-8 flex items-center gap-4">
             <Link
-              href=""
+              href="https://drive.google.com/file/d/1OruWyOyzmqxcQqL6Wnn7FMtQ3-ol4SVm/view?usp=sharing"
+              target="_blank"
+              rel="noopener noreferrer"
               className={buttonVariants({
                 variant: "outline",
                 className:
@@ -38,7 +41,7 @@ function HomePage() {
               Resume / CV
             </Link>
 
-            <Link href="#" className={buttonVariants()}>
+            <Link href="/contact" className={buttonVariants()}>
               Get in touch
             </Link>
           </div>
@@ -56,6 +59,8 @@ function HomePage() {
                 <TechnologyTag tech="reactjs" /> <TechnologyTag tech="nextjs" />
                 <TechnologyTag tech="typescript" />
                 <TechnologyTag tech="tailwindcss" />{" "}
+                <TechnologyTag tech="shadcn" />
+                <TechnologyTag tech="reactQuery" />
                 <TechnologyTag tech="nodejs" />
                 <TechnologyTag tech="postgresql" />
                 <TechnologyTag tech="mongodb" />
@@ -135,7 +140,7 @@ function HomePage() {
       </section>
       <section>
         <Container className="px-4">
-          <div className="flex flex-col justify-center items-center gap-2 space-y-4 border border-primary/20 py-10 rounded-md">
+          <div className="flex flex-col justify-center items-center gap-2 space-y-4 border border-dashed dark:border-white/10 border-black/20 p-2 rounded-md bg-linear-to-br from-red-400/5 to-orange-200/5 py-10">
             <h4 className="text-lg sm:text-xl font-semibold text-muted-foreground">
               Let's connect and build something together
             </h4>
