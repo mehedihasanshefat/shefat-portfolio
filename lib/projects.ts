@@ -18,7 +18,7 @@ const projects = [
   {
     slug: "learnstack",
     name: "LearnStack",
-    status: "Working",
+    status: "Completed",
     role: "Full Stack",
     team: "Solo",
     timeline: "Six Week",
