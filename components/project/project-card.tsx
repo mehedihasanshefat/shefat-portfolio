@@ -29,7 +29,7 @@ function ProjectCard({ project }: { project: ProjectType }) {
             </Link>
           </div>
         </div>
-        <p className="line-clamp-3 my-3">{project.description}</p>
+        <p className="line-clamp-3 my-3 text-sm">{project.description}</p>
         <div>
           <span className="text-sm font-medium">Technologies</span>
           <div className="flex items-center gap-1 my-2">
@@ -47,12 +47,12 @@ function ProjectCard({ project }: { project: ProjectType }) {
         </div>
         <div className="flex items-center justify-between pt-2">
           {project.status === "Completed" ? (
-            <span className="text-xs bg-green-600/10 px-2 py-1 rounded-md text-white flex flex-nowrap items-center gap-2">
+            <span className="text-xs bg-green-600/10 px-2 py-1 rounded-md dark:text-white flex flex-nowrap items-center gap-2">
               <span className="size-2 animate-pulse bg-green-400 rounded-full" />
               All Systems Operational
             </span>
           ) : (
-            <span className="text-xs bg-red-600/10 px-2 py-1 rounded-md text-white flex flex-nowrap items-center gap-2">
+            <span className="text-xs bg-red-600/10 px-2 py-1 rounded-md dark:text-white flex flex-nowrap items-center gap-2">
               <span className="size-2 animate-pulse bg-green-400 rounded-full" />
               Working
             </span>

@@ -45,6 +45,11 @@ export const technologies: Record<string, TechnologyType> = {
     icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nodejs/nodejs-original.svg",
     color: "bg-green-100 dark:bg-green-900/30",
   },
+  bun: {
+    name: "Bun",
+    icon: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/bun/bun-original.svg",
+    color: "bg-yellow-100 dark:bg-yellow-900/30",
+  },
   mongodb: {
     name: "MongoDB",
     icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mongodb/mongodb-original.svg",

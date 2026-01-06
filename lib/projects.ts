@@ -22,7 +22,7 @@ const projects = [
     role: "Full Stack",
     team: "Solo",
     timeline: "Six Week",
-    liveLink: "",
+    liveLink: "https://learnstack-lms.vercel.app/",
     githubLink: "https://github.com/mehedihasanshefat/learnstack-lms.git",
     image: "/images/projects/learnstack.PNG",
     technologies: [

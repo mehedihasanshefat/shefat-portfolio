@@ -19,7 +19,7 @@ function BlogCard({ blog }: { blog: BlogType }) {
       <CardContent className="px-3 pb-6 flex flex-col h-fit">
         <h4 className="text-xl font-bold line-clamp-2">{blog.title}</h4>
         <span className="text-xs mt-2">{blog.date}</span>
-        <p className="line-clamp-2 my-3">{blog.description}</p>
+        <p className="line-clamp-2 my-3 text-sm">{blog.description}</p>
         <Link
           href={`/blog/${blog.slug}`}
           className="text-xs flex items-center gap-1 mt-4"

@@ -10,6 +10,11 @@ const hankenGrotsek = Hanken_Grotesk({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700", "800", "900"],
 });
+const inter = Inter({
+  variable: "--font-inter",
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700", "800", "900"],
+});
 
 export const metadata: Metadata = {
   title: "Shefat - Portfolio",
@@ -24,7 +29,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${hankenGrotsek.variable}  antialiased bg-neutral-100 dark:bg-black/60`}
+        className={`${hankenGrotsek.variable} ${inter.variable} antialiased bg-neutral-100 dark:bg-black/60`}
         suppressHydrationWarning
       >
         <ThemeProvider

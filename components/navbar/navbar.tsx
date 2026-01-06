@@ -4,9 +4,10 @@ import Container from "../container";
 import { motion, useMotionValueEvent, useScroll } from "motion/react";
 import { useState } from "react";
 import Image from "next/image";
+import { ThemeToggle } from "../theme-toggle";
 
 const navItems = [
-  { title: "About", href: "/about" },
+  // { title: "About", href: "/about" },
   { title: "Projects", href: "/projects" },
   { title: "Blog", href: "/blog" },
   { title: "Contact", href: "/contact" },
@@ -38,7 +39,7 @@ function Navbar() {
           scrolled && "rounded-full"
         }`}
       >
-        <Link href="/">
+        <Link href="/" className="md:hidden">
           <Image
             src="/images/shefat.png"
             height={50}
@@ -47,6 +48,9 @@ function Navbar() {
             className="rounded-full aspect-square object-cover object-top sm:w-10 sm:h-10 w-8 h-8"
           />
         </Link>
+        <span className="hidden md:block text-xl font-bold tracking-tight font-inter-700">
+          MH Shefat
+        </span>
 
         <div className="flex items-center">
           {navItems.map((item, idx) => (
@@ -66,6 +70,7 @@ function Navbar() {
               <span className="relative z-10">{item.title}</span>
             </Link>
           ))}
+          <ThemeToggle />
         </div>
       </motion.nav>
     </Container>

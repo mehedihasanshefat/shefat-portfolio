@@ -1,5 +1,4 @@
 import { TechnologyTag } from "@/components/technology/technology-tag";
-import { cn } from "@/lib/utils";
 function Experience() {
   return (
     <div>
@@ -24,31 +23,31 @@ function Experience() {
         <div className="flex items-center flex-wrap gap-2 space-y-2 mt-4">
           <TechnologyTag tech="reactjs" /> <TechnologyTag tech="nextjs" />
           <TechnologyTag tech="typescript" />
-          <TechnologyTag tech="tailwindcss" /> <TechnologyTag tech="nodejs" />
+          <TechnologyTag tech="tailwindcss" /> <TechnologyTag tech="bun" />
           <TechnologyTag tech="postgresql" />
           <TechnologyTag tech="prisma" />
         </div>
         <ul className="px-6 py-3 flex flex-col gap-1">
-          <li className="list-disc text-muted-foreground">
+          <li className="list-disc ">
             Built a full LMS platform with user registration, course purchase,
             and progress tracking.
           </li>
-          <li className="list-disc text-muted-foreground">
+          <li className="list-disc ">
             Implemented secure authentication & RBAC using Better-Auth.
           </li>
-          <li className="list-disc text-muted-foreground">
+          <li className="list-disc ">
             Integrated AWS S3 for scalable media uploads.
           </li>
-          <li className="list-disc text-muted-foreground">
+          <li className="list-disc ">
             Developed user dashboards for course access and lesson tracking.
           </li>
-          <li className="list-disc text-muted-foreground">
+          <li className="list-disc ">
             Built an admin panel with full course CRUD.
           </li>
-          <li className="list-disc text-muted-foreground">
+          <li className="list-disc ">
             Strengthened security with Arcjet rate-limiting and Zod validation.
           </li>
-          <li className="list-disc text-muted-foreground">
+          <li className="list-disc ">
             Designed optimized data models using PostgreSQL + Prisma.
           </li>
         </ul>
