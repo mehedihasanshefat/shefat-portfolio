@@ -4,7 +4,7 @@ function TextLogo() {
   return (
     <Link
       href="/"
-      className="group flex items-center gap-0.5 sm:gap-1 text-sm sm:text-base md:text-xl lg:text-2xl font-bold tracking-tight"
+      className="hidden group md:flex items-center gap-0.5 sm:gap-1 text-sm sm:text-base md:text-lg lg:text-xl font-bold tracking-tight"
       aria-label="Home - Shefat"
     >
       {/* Opening bracket with enhanced hover */}

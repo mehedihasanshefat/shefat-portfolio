@@ -5,6 +5,7 @@ import { motion, useMotionValueEvent, useScroll } from "motion/react";
 import { useState } from "react";
 import Image from "next/image";
 import { ThemeToggle } from "../theme-toggle";
+import TextLogo from "./text-logo";
 
 const navItems = [
   // { title: "About", href: "/about" },
@@ -48,9 +49,7 @@ function Navbar() {
             className="rounded-full aspect-square object-cover object-top sm:w-10 sm:h-10 w-8 h-8"
           />
         </Link>
-        <span className="hidden md:block text-xl font-bold tracking-tight font-inter-700">
-          MH Shefat
-        </span>
+        <TextLogo />
 
         <div className="flex items-center">
           {navItems.map((item, idx) => (

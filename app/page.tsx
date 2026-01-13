@@ -40,7 +40,7 @@ function HomePage() {
                 </p>
                 <div className="flex items-center gap-4">
                   <Link
-                    href="https://drive.google.com/file/d/1OruWyOyzmqxcQqL6Wnn7FMtQ3-ol4SVm/view?usp=sharing"
+                    href="https://drive.google.com/file/d/16jS5VZdMqClDPJ28s5BXLsdvHwog-VJx/view?usp=sharing"
                     target="_blank"
                     rel="noopener noreferrer"
                     className={buttonVariants({
