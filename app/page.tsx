@@ -85,7 +85,7 @@ function HomePage() {
             </div>
           </div>
         </section>
-        <section className="py-8">
+        {/* <section className="py-8">
           <div className="p-4">
             <span className="text-sm font-normal text-muted-foreground">
               Featured
@@ -93,7 +93,7 @@ function HomePage() {
             <h4 className="text-2xl font-bold">Experience</h4>
             <Experience />
           </div>
-        </section>
+        </section> */}
         <section>
           <div className="p-4">
             <span className="text-sm font-normal text-muted-foreground">
